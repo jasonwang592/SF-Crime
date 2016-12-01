@@ -16,3 +16,31 @@ faceted_heatmap <- function(df, title) {
     facet_wrap(~Category) + ggtitle(title)
   return(g)
 }
+
+aggregate_bar <- function(df, time.aggregate) {
+# Takes in a dataframe and returns a bar graph aggregated by the
+# time period specified
+# Args:
+#   df: dataframe to plot bar graphs for
+#   time.aggregate: column name that will be used as the time period aggregator
+# Returns:
+#   g: Graph object to be plotted
+  aggregated.df <- setNames(aggregate(df, list(df[,time.aggregate]), FUN = "length"), c(substitute(time.aggregate), "Count"))
+  g <- ggplot(data = aggregated.df, aes(x = aggregated.df[,time.aggregate], y = Count)) + geom_bar(stat="identity", position="dodge", color = blue_pal[3], fill = blue_pal[3]) +
+    labs(x = substitute(time.aggregate)) + ggtitle(paste0('San Francisco Crimes by ', c(substitute(time.aggregate))))
+  return(g)
+}
+
+faceted_aggregate_bar <- function(df, time.aggregate) {
+# Takes in a dataframe and returns a bar graph aggregated by the
+# time period specified and faceted by the Category of crime
+# Args:
+#   df: dataframe to plot bar graphs for
+#   time.aggregate: column name that will be used as the time period aggregator
+# Returns:
+#   g: Graph object to be plotted
+  aggregated.df <- setNames(aggregate(. ~ + df[,time.aggregate] + Category, data = df, FUN = "length"), c(substitute(time.aggregate), "Category", "Count"))
+  g <- ggplot(data = aggregated.df, aes(x = aggregated.df[,time.aggregate], y = Count, fill = Category)) + geom_bar(stat="identity", position = "dodge") +
+    labs(x = substitute(time.aggregate)) + ggtitle(paste0('San Francisco Crimes by ', c(substitute(time.aggregate))))
+  return(g)
+}

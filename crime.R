@@ -11,7 +11,7 @@ sf.lat <- c(37.705, 37.84)
 blue_pal <- brewer.pal(5,'Blues')
 red_pal <- brewer.pal(5, 'YlOrRd')
 
-df <- read.csv('/data/train.csv')
+df <- read.csv('data/train.csv')
 df$Hour <- as.factor(hour(as.POSIXlt(df$Dates, tz="UTC")))
 df$Year <- factor(year(df$Dates))
 df$DayOfWeek <- factor(df$DayOfWeek, levels=c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday",
@@ -40,22 +40,24 @@ violentDF <- droplevels(violentDF)
 theftDF <- droplevels(theftDF)
 
 # Bar graph of violent crime by hour
-violentHourlyDF <- setNames(aggregate(violentDF, list(violentDF$Hour), FUN = "length"), c("Hour", "Count"))
-g <- ggplot(data = violentHourlyDF, aes(x = Hour, y = Count)) + geom_bar(stat="identity", position="dodge", color = red_pal[4], fill = red_pal[4]) +
-  ggtitle('San Francisco Crimes by Hour')
+png('output/Hourly_Violent_Crime_Bar.png', units = 'in', width = 11, height = 8, res = 400)
+g <- aggregate_bar(violentDF, "Hour")
 plot(g)
 
 # Bar graph of violent crime by day
-violentDailyDF <- setNames(aggregate(violentDF, list(violentDF$DayOfWeek), FUN = "length"), c("DayOfWeek", "Count"))
-g <- ggplot(data = violentDailyDF, aes(x = DayOfWeek, y = Count), colour = blue_pal) + geom_bar(stat="identity", position="dodge", color = red_pal[4], fill = red_pal[4]) +
-  ggtitle('Violent San Francisco Crimes by Day of Week')
+png('output/Daily_Violent_Crime_Bar.png', units = 'in', width = 11, height = 8, res = 400)
+g <- aggregate_bar(violentDF,"DayOfWeek")
 plot(g)
 
 # Bar graph of violent crime by month
-violentMonthlyDF <- setNames(aggregate(violentDF, list(violentDF$Month), FUN = "length"), c("Month", "Count"))
-g <- ggplot(data = violentMonthlyDF, aes(x = Month, y = Count), colour = blue_pal) + geom_bar(stat="identity", position="dodge", color = red_pal[4], fill = red_pal[4]) +
-  ggtitle('San Francisco Crimes by Month')
+png('output/Montly_Violent_Crime_Bar.png', units = 'in', width = 11, height = 8, res = 400)
+g <- aggregate_bar(violentDF,"Month")
 plot(g)
+
+# Bar graph of violent crime by month broken down by Category
+png(paste0('output/Monthly_Violent_Crime_By_Category_Bar.png'), units = 'in', width = 11, height = 8, res = 400)
+g <- faceted_aggregate_bar(violentDF, "Month")
+dev.off()
 
 # Plot all violent crimes together
 png('output/All_Violent_Crime.png', units = 'in', width = 11, height = 8, res = 600)
