@@ -33,7 +33,6 @@ print(tmp[order(tmp$Count, decreasing = TRUE),])
 
 # Analysis from this point on is less generalized. Data is split and analyzed based on whether the
 # crime is violent or non-violent.
-
 violentDF <- df[df$Category %in% c("ROBBERY", "ASSAULT", "SEX OFFENSES FORCIBLE", "KIDNAPPING"),]
 theftDF <- df[df$Category %in% c("LARCENY/THEFT", "VEHICLE THEFT", "BURGLARY"),]
 violentDF <- droplevels(violentDF)
