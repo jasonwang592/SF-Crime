@@ -23,7 +23,8 @@ violentTrainInd <- sample(seq_len(nrow(violentDF)), nrow(violentDF) * .75)
 violentTrain <- violentDF[violentTrainInd,]
 violentTest <- violentDF[-violentTrainInd,]
 
-rf <- randomForest(Category ~ Hour + Month + X + Y + DayOfWeek, ntree = 50, data = violentTrain)
+rf <- randomForest(Category ~ X + Y + Hour + DayOfWeek + PdDistrict, ntree = 50, data = violentTrain, importance = TRUE)
+print(rf)
 preds <- predict(rf, violentTest)
 correctPreds <- preds == violentTest$Category
 t <- table(preds, violentTest$Category)

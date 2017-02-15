@@ -42,20 +42,42 @@ theftDF <- droplevels(theftDF)
 png('output/Hourly_Violent_Crime_Bar.png', units = 'in', width = 11, height = 8, res = 400)
 g <- aggregate_bar(violentDF, "Hour")
 plot(g)
+dev.off()
+
+# Bar graph of nonviolent crime by hour
+png('output/Hourly_Nonviolent_Crime_Bar.png', units = 'in', width = 11, height = 8, res = 400)
+g <- aggregate_bar(theftDF, "Hour")
+plot(g)
+dev.off()
 
 # Bar graph of violent crime by day
 png('output/Daily_Violent_Crime_Bar.png', units = 'in', width = 11, height = 8, res = 400)
 g <- aggregate_bar(violentDF,"DayOfWeek")
 plot(g)
 
+# Bar graph of nonviolent crime by day
+png('output/Daily_Nonviolent_Crime_Bar.png', units = 'in', width = 11, height = 8, res = 400)
+g <- aggregate_bar(theftDF,"DayOfWeek")
+plot(g)
+dev.off()
+
 # Bar graph of violent crime by month
-png('output/Montly_Violent_Crime_Bar.png', units = 'in', width = 11, height = 8, res = 400)
+png('output/Monthly_Violent_Crime_Bar.png', units = 'in', width = 11, height = 8, res = 400)
 g <- aggregate_bar(violentDF,"Month")
 plot(g)
 
-# Bar graph of violent crime by month broken down by Category
-png(paste0('output/Monthly_Violent_Crime_By_Category_Bar.png'), units = 'in', width = 11, height = 8, res = 400)
-g <- faceted_aggregate_bar(violentDF, "Month")
+# Bar graph of nonviolent crime by month
+png('output/Monthly_Nonviolent_Crime_Bar.png', units = 'in', width = 11, height = 8, res = 400)
+g <- aggregate_bar(theftDF,"Month")
+plot(g)
+dev.off()
+
+# Bar graph of violent crime by hour broken down by Category
+# Note:
+#   Hour can be replaced with Month to generate the same bar plot but aggregated by month
+png(paste0('output/Hourly_Violent_Crime_By_Category_Bar.png'), units = 'in', width = 11, height = 8, res = 400)
+g <- faceted_aggregate_bar(violentDF, "Hour", normalize = FALSE)
+plot(g)
 dev.off()
 
 # Plot all violent crimes together
@@ -70,7 +92,7 @@ dev.off()
 for (i in levels(violentDF$Year)) {
   png(paste0('output/Yearly_Violent_Crime_Points/Year_', i, '.png'), units = 'in', width = 11, height = 8, res = 400)
   sf_map <- suppressMessages(get_map(location = c(mean(sf.long), mean(sf.lat)), zoom = 12, maptype = "roadmap"))
-  g <- ggmap(sf_map) + geom_point(data = violentDF[violentDF$Year == i,], aes(X, Y, colour = Category), alpha = 0.5, size = .5) +
+  g <- ggmap(sf_map) + geom_point(data = violentDF[violentDF$Year == i,], aes(X, Y, colour = Category), alpha = 0.5, size = .7) +
     scale_x_continuous(limits = sf.long, expand = c(0, 0)) + scale_y_continuous(limits = sf.lat, expand = c(0, 0)) +
     labs(x = 'Longitude', y = 'Latitude') + ggtitle(paste0('Violent Crime in San Francisco, Year ', i))
   plot(g)
@@ -100,9 +122,8 @@ dev.off()
 
 # Heatmapping crimes on separate maps by hour
 for (i in levels(violentDF$Hour)) {
-  png(paste0('output/Hourly_Violent_Crime_Heatmap_/Hour_', i, '.png'), units = 'in', width = 11, height = 8, res = 400)
+  png(paste0('output/Hourly_Violent_Crime_Heatmap/Hour_', i, '.png'), units = 'in', width = 11, height = 8, res = 300)
   g <- faceted_heatmap(violentDF[violentDF$Hour == i,], paste0('Crime in San Francisco, Hour ', i))
   plot(g)
   dev.off()
 }
-

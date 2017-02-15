@@ -31,16 +31,26 @@ aggregate_bar <- function(df, time.aggregate) {
   return(g)
 }
 
-faceted_aggregate_bar <- function(df, time.aggregate) {
+faceted_aggregate_bar <- function(df, time.aggregate, normalize = FALSE) {
 # Takes in a dataframe and returns a bar graph aggregated by the
 # time period specified and faceted by the Category of crime
 # Args:
 #   df: dataframe to plot bar graphs for
 #   time.aggregate: column name that will be used as the time period aggregator
+#   normalize: Normalizes the count of the crime type
 # Returns:
 #   g: Graph object to be plotted
   aggregated.df <- setNames(aggregate(. ~ + df[,time.aggregate] + Category, data = df, FUN = "length"), c(substitute(time.aggregate), "Category", "Count"))
-  g <- ggplot(data = aggregated.df, aes(x = aggregated.df[,time.aggregate], y = Count, fill = Category)) + geom_bar(stat="identity", position = "dodge") +
-    labs(x = substitute(time.aggregate)) + ggtitle(paste0('San Francisco Crimes by ', c(substitute(time.aggregate))))
-  return(g)
+  if (normalize) {
+    for (i in 1:nrow(aggregated.df)){
+      aggregated.df$NormalizedCount[i] <- aggregated.df$Count[i]/sum(aggregated.df$Count[aggregated.df$Category == aggregated.df$Category[i]])
+    }
+    g <- ggplot(data = aggregated.df, aes(x = aggregated.df[,time.aggregate], y = NormalizedCount, fill = Category)) + geom_bar(stat="identity", position = "dodge") +
+      labs(x = substitute(time.aggregate)) + ggtitle(paste0('San Francisco Crimes by ', c(substitute(time.aggregate))))
+    return(g)
+  } else {
+    g <- ggplot(data = aggregated.df, aes(x = aggregated.df[,time.aggregate], y = Count, fill = Category)) + geom_bar(stat="identity", position = "dodge") +
+      labs(x = substitute(time.aggregate)) + ggtitle(paste0('San Francisco Crimes by ', c(substitute(time.aggregate))))
+    return(g)
+  }
 }
