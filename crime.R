@@ -20,16 +20,21 @@ df$Month <- month.abb[month(df$Dates)]
 df$Month <- factor(df$Month, levels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
                                         "Oct", "Nov", "Dec"))
 
+
+# Investigate what crimes are the most common
+png('output/Count_of_Crime_by_Type.png', units = 'in', width = 11, height = 8, res = 600)
+tmp <- setNames(aggregate(df$Category, list(df$Category), FUN = "length"), c('Crime', 'Count'))
+g <- ggplot(tmp, aes(x=reorder(Crime, Count), y=Count, fill = Crime)) +
+  geom_bar(stat='identity') + scale_fill_hue(c=55, l=80) + guides(fill=FALSE) +
+  coord_flip() + labs(x = 'Crime') + ggtitle('San Francisco Crimes by Type')
+plot(g)
+dev.off()
+
 # Investigate crimes based on time of day
 hourlyDF <- setNames(aggregate(df, list(df$Hour), FUN = "length"), c("Hour", "Count"))
 g <- ggplot(data = hourlyDF, aes(x = Hour, y = Count)) + geom_bar(stat="identity", position="dodge", color = blue_pal[3], fill = blue_pal[3]) +
     ggtitle('San Francisco Crimes by Hour')
 plot(g)
-
-# Investigate what crimes are the most common
-tmp <- setNames(aggregate(df$Category, list(df$Category), FUN = "length"), c('Crime', 'Count'))
-print(tmp[order(tmp$Count, decreasing = TRUE),])
-
 
 # Analysis from this point on is less generalized. Data is split and analyzed based on whether the
 # crime is violent or non-violent.
