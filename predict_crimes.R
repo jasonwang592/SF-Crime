@@ -28,6 +28,6 @@ print(rf)
 preds <- predict(rf, violentTest)
 correctPreds <- preds == violentTest$Category
 t <- table(preds, violentTest$Category)
-print(t)
 accuracy <- sum(correctPreds)/nrow(violentTest)
-print(accuracy)
+print(t)
+cat(paste("Prediction Accuracy:",toString(accuracy)))
